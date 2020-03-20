@@ -10,6 +10,9 @@ grade: stable
 confinement: strict
 
 parts:
+  build-trigger:
+    plugin: nil
+    source: https://github.com/NatronGitHub/Natron.git
   natron:
     plugin: nil
     override-build: |
