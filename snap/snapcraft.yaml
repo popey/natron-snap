@@ -1,0 +1,84 @@
+name: natron
+base: core18 # the base snap is the execution environment for this snap
+adopt-info: natron
+summary: Natron
+description: |
+  Open-source compositing software. Node-graph based. Similar in 
+  functionalities to Adobe After Effects and Nuke by The Foundry. 
+
+grade: stable
+confinement: strict
+
+parts:
+  natron:
+    plugin: nil
+    override-build: |
+      set -xeu
+      echo "Get GitHub releases..."
+      wget --quiet https://api.github.com/repos/NatronGitHub/Natron/releases -O releases.json
+      # Get the version from the tag_name and the download URL.
+      VERSION=$(jq . releases.json | grep tag_name | head -n 1 | cut -d'"' -f4)
+      TAR_URL=$(grep browser_download_url releases.json | grep "${VERSION}" | grep tar | grep Linux-64 | cut -d'"' -f4)
+      wget --quiet $TAR_URL -O natron.tar.xz
+      unxz natron.tar.xz 
+      tar xvf natron.tar --strip-components=1 -C $SNAPCRAFT_PART_INSTALL/
+      rm natron.tar releases.json
+      snapcraftctl set-version "$VERSION"
+    build-packages:
+      - wget
+      - jq
+      - xz-utils
+      - dpkg
+      - git
+    stage-packages:
+      - libbsd0
+      - libgl1
+      - libglu1-mesa
+      - libglvnd0
+      - libglx0
+      - libice6
+      - libsm6
+      - libx11-6
+      - libxau6
+      - libxcb1
+      - libxcursor1
+      - libxdmcp6
+      - libxext6
+      - libxfixes3
+      - libxi6
+      - libxinerama1
+      - libxrandr2
+      - libxrender1
+      - libgl1-mesa-dri
+      - libgl1-mesa-glx
+  desktop-qt5:
+      build-packages:
+        - qtbase5-dev
+        - dpkg-dev
+      make-parameters:
+        - FLAVOR=qt5
+      plugin: make
+      source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+      source-subdir: qt
+      stage-packages:
+        - libxkbcommon0
+        - ttf-ubuntu-font-family
+        - dmz-cursor-theme
+        - light-themes
+        - adwaita-icon-theme
+        - gnome-themes-standard
+        - shared-mime-info
+        - libqt5gui5
+        - libgdk-pixbuf2.0-0
+        - libqt5svg5
+        - locales-all
+        - xdg-user-dirs
+apps:
+  natron:
+    command: desktop-launch $SNAP/Natron
+    plugs:
+      - desktop
+      - desktop-legacy
+      - x11
+      - opengl
+      - network

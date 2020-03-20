@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Natron
+Exec=natron
+Comment=Open source video compositing software
+Icon=${SNAP}/meta/gui/natron.png
+Type=Application
+Terminal=false
+StartupNotify=false
+Categories=Graphics;2DGraphics;RasterGraphics;
