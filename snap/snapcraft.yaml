@@ -80,6 +80,8 @@ apps:
   natron:
     command: desktop-launch $SNAP/Natron
     plugs:
+      - home
+      - removable-media
       - desktop
       - desktop-legacy
       - x11
