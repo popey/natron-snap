@@ -35,6 +35,7 @@ parts:
       - git
     stage-packages:
       - libbsd0
+      - libgomp1
       - libgl1
       - libglu1-mesa
       - libglvnd0
