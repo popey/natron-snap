@@ -5,7 +5,7 @@ summary: Natron
 description: |
   Open-source compositing software. Node-graph based. Similar in 
   functionalities to Adobe After Effects and Nuke by The Foundry. 
-
+compression: lzo
 grade: stable
 confinement: strict
 
