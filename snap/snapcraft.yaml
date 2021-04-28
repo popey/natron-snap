@@ -20,7 +20,7 @@ parts:
       echo "Get GitHub releases..."
       wget --quiet https://api.github.com/repos/NatronGitHub/Natron/releases -O releases.json
       # Get the version from the tag_name and the download URL.
-      VERSION=$(jq . releases.json | grep tag_name | head -n 1 | cut -d'"' -f4)
+      VERSION=$(jq . releases.json | grep tag_name | head -n 1 | cut -d'"' -f4 | tr -d "v")
       TAR_URL=$(grep browser_download_url releases.json | grep "${VERSION}" | grep tar | grep Linux-64 | cut -d'"' -f4)
       wget --quiet $TAR_URL -O natron.tar.xz
       unxz natron.tar.xz 
