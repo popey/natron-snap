@@ -9,6 +9,9 @@ compression: lzo
 grade: stable
 confinement: strict
 
+architectures:
+  - build-on: amd64
+
 parts:
   build-trigger:
     plugin: nil
