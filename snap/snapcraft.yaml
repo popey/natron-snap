@@ -18,12 +18,13 @@ parts:
     override-build: |
       set -xeu
       echo "Get GitHub releases..."
+      # https://github.com/NatronGitHub/Natron/releases/download/v2.4.2/Natron-2.4.2-Linux-x86_64-no-installer.tar.xz
       wget --quiet https://api.github.com/repos/NatronGitHub/Natron/releases -O releases.json
       # Get the version from the tag_name and the download URL.
-      VERSION=$(jq . releases.json | grep tag_name | head -n 1 | cut -d'"' -f4 | tr -d "v")
-      TAR_URL=$(grep browser_download_url releases.json | grep "${VERSION}" | grep tar | grep Linux-64 | cut -d'"' -f4)
+      VERSION=$(jq . releases.json | grep tag_name | grep -v rc1 | grep -v alpha | head -n 1 | cut -d'"' -f4 | tr -d "v")
+      TAR_URL=$(grep browser_download_url releases.json | grep "${VERSION}" | grep tar.xz | grep Linux-x86_64-no-installer | cut -d'"' -f4)
       wget --quiet $TAR_URL -O natron.tar.xz
-      unxz natron.tar.xz 
+      unxz natron.tar.xz
       tar xvf natron.tar --strip-components=1 -C $SNAPCRAFT_PART_INSTALL/
       rm natron.tar releases.json
       snapcraftctl set-version "$VERSION"
@@ -55,6 +56,7 @@ parts:
       - libxrender1
       - libgl1-mesa-dri
       - libgl1-mesa-glx
+      - libasound2
   desktop-qt5:
       build-packages:
         - qtbase5-dev
