@@ -1,5 +1,5 @@
 name: natron
-base: core18 # the base snap is the execution environment for this snap
+base: core20
 adopt-info: natron
 summary: Natron
 description: |
