@@ -20,16 +20,18 @@ parts:
     plugin: nil
     override-build: |
       set -xeu
-      echo "Get GitHub releases..."
-      wget --quiet https://api.github.com/repos/NatronGitHub/Natron/releases -O releases.json
-      VERSION=$(jq . releases.json | grep tag_name | grep -v rc1 | grep -v alpha | head -n 1 | cut -d'"' -f4 | tr -d "v")
-      TAR_URL=$(grep browser_download_url releases.json | grep "${VERSION}" | grep tar.xz | grep Linux-x86_64-no-installer | cut -d'"' -f4)
-      wget --quiet $TAR_URL -O natron.tar.xz
+      echo "Get GitHub latest release..."
+      RELEASE=$(curl -sL https://api.github.com/repos/NatronGitHub/Natron/releases/latest)
+      VERSION=$(echo "$RELEASE" | jq -r '.tag_name' | tr -d 'v')
+      TAR_URL=$(echo "$RELEASE" | jq -r '.assets[] | select(.name | test("Linux-x86_64-no-installer\\.tar\\.xz$")) | .browser_download_url')
+      echo "Downloading Natron $VERSION from $TAR_URL"
+      wget --quiet "$TAR_URL" -O natron.tar.xz
       unxz natron.tar.xz
       tar xvf natron.tar --strip-components=1 -C $CRAFT_PART_INSTALL/
-      rm natron.tar releases.json
+      rm natron.tar
       craftctl set version="$VERSION"
     build-packages:
+      - curl
       - wget
       - jq
       - xz-utils
