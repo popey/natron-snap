@@ -1,16 +1,16 @@
 name: natron
-base: core20
+base: core24
 adopt-info: natron
 summary: Natron
 description: |
-  Open-source compositing software. Node-graph based. Similar in 
-  functionalities to Adobe After Effects and Nuke by The Foundry. 
+  Open-source compositing software. Node-graph based. Similar in
+  functionalities to Adobe After Effects and Nuke by The Foundry.
 compression: lzo
 grade: stable
 confinement: strict
 
-architectures:
-  - build-on: amd64
+platforms:
+  amd64:
 
 parts:
   build-trigger:
@@ -20,23 +20,21 @@ parts:
     plugin: nil
     override-build: |
       set -xeu
-      echo "Get GitHub releases..."
-      # https://github.com/NatronGitHub/Natron/releases/download/v2.4.2/Natron-2.4.2-Linux-x86_64-no-installer.tar.xz
-      wget --quiet https://api.github.com/repos/NatronGitHub/Natron/releases -O releases.json
-      # Get the version from the tag_name and the download URL.
-      VERSION=$(jq . releases.json | grep tag_name | grep -v rc1 | grep -v alpha | head -n 1 | cut -d'"' -f4 | tr -d "v")
-      TAR_URL=$(grep browser_download_url releases.json | grep "${VERSION}" | grep tar.xz | grep Linux-x86_64-no-installer | cut -d'"' -f4)
-      wget --quiet $TAR_URL -O natron.tar.xz
+      echo "Get GitHub latest release..."
+      RELEASE=$(curl -sL https://api.github.com/repos/NatronGitHub/Natron/releases/latest)
+      VERSION=$(echo "$RELEASE" | jq -r '.tag_name' | tr -d 'v')
+      TAR_URL=$(echo "$RELEASE" | jq -r '.assets[] | select(.name | test("Linux-x86_64-no-installer\\.tar\\.xz$")) | .browser_download_url')
+      echo "Downloading Natron $VERSION from $TAR_URL"
+      wget --quiet "$TAR_URL" -O natron.tar.xz
       unxz natron.tar.xz
-      tar xvf natron.tar --strip-components=1 -C $SNAPCRAFT_PART_INSTALL/
-      rm natron.tar releases.json
-      snapcraftctl set-version "$VERSION"
+      tar xvf natron.tar --strip-components=1 -C $CRAFT_PART_INSTALL/
+      rm natron.tar
+      craftctl set version="$VERSION"
     build-packages:
+      - curl
       - wget
       - jq
       - xz-utils
-      - dpkg
-      - git
     stage-packages:
       - libbsd0
       - libgomp1
@@ -58,33 +56,12 @@ parts:
       - libxrandr2
       - libxrender1
       - libgl1-mesa-dri
-      - libgl1-mesa-glx
-      - libasound2
-  desktop-qt5:
-      build-packages:
-        - qtbase5-dev
-        - dpkg-dev
-      make-parameters:
-        - FLAVOR=qt5
-      plugin: make
-      source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
-      source-subdir: qt
-      stage-packages:
-        - libxkbcommon0
-        - ttf-ubuntu-font-family
-        - dmz-cursor-theme
-        - light-themes
-        - adwaita-icon-theme
-        - gnome-themes-standard
-        - shared-mime-info
-        - libqt5gui5
-        - libgdk-pixbuf2.0-0
-        - libqt5svg5
-        - locales-all
-        - xdg-user-dirs
+      - libasound2t64
+
 apps:
   natron:
-    command: desktop-launch $SNAP/Natron
+    extensions: [ gnome ]
+    command: Natron
     plugs:
       - home
       - removable-media
