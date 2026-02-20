@@ -1,6 +1,6 @@
 # natron-snap
 
-[![natron](https://github.com/popey/natron-snap/actions/workflows/build.yml/badge.svg)](https://github.com/popey/natron-snap/actions)
+[![natron](https://github.com/popey/natron-snap/actions/workflows/test-snap-can-build.yml/badge.svg)](https://github.com/popey/natron-snap/actions)
 [![natron](https://snapcraft.io/natron/badge.svg)](https://snapcraft.io/natron)
 [![natron](https://snapcraft.io/natron/trending.svg?name=0)](https://snapcraft.io/natron)
 
